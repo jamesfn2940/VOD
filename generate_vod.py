@@ -146,7 +146,7 @@ def list_recursive(folder_id, group_name, token):
 
 
 def make_stream_url(file_id):
-    return f"https://drive.google.com/uc?export=download&id={file_id}"
+    return f"https://drive.google.com/file/d/{file_id}/preview"
 
 
 def generate_m3u(files, output_path):
