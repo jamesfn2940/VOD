@@ -7,18 +7,29 @@ export default {
       return new Response("Missing id parameter", { status: 400 });
     }
 
-    const driveUrl = `https://drive.google.com/uc?export=download&id=${fileId}&confirm=t`;
-
-    const response = await fetch(driveUrl, {
-      headers: {
-        "User-Agent": "Mozilla/5.0",
-      },
+    // First request to get confirmation token
+    const firstUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+    const firstResp = await fetch(firstUrl, {
+      headers: { "User-Agent": "Mozilla/5.0" },
       redirect: "follow",
     });
 
-    return new Response(response.body, {
+    const html = await firstResp.text();
+
+    // Extract confirm token if present
+    const match = html.match(/confirm=([0-9A-Za-z_]+)/);
+    const confirm = match ? match[1] : "t";
+
+    // Second request with confirm token
+    const finalUrl = `https://drive.google.com/uc?export=download&id=${fileId}&confirm=${confirm}`;
+    const finalResp = await fetch(finalUrl, {
+      headers: { "User-Agent": "Mozilla/5.0" },
+      redirect: "follow",
+    });
+
+    return new Response(finalResp.body, {
       headers: {
-        "Content-Type": response.headers.get("Content-Type") || "video/mp4",
+        "Content-Type": "video/mp4",
         "Access-Control-Allow-Origin": "*",
       },
     });
