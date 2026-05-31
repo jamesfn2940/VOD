@@ -1,0 +1,42 @@
+name: Generate Telegram VOD Playlist
+
+on:
+  schedule:
+    - cron: "0 22 * * *"
+  workflow_dispatch:
+
+jobs:
+  generate-vod:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate VOD playlist
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          VOD_OUTPUT_FILE: vod_playlist.m3u
+          VOD_GROUP: VOD
+        run: python generate_vod_telegram.py
+
+      - name: Commit VOD playlist
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add vod_playlist.m3u
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: auto-update Telegram VOD playlist [$(date -u '+%Y-%m-%d %H:%M UTC')]"
+            git pull --rebase origin main
+            git push
+          fi
