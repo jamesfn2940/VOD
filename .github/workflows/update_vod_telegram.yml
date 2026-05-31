@@ -23,16 +23,16 @@ jobs:
       - name: Generate VOD playlist
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
           VOD_OUTPUT_FILE: vod_playlist.m3u
+          VOD_DB_FILE: vod_database.json
           VOD_GROUP: VOD
         run: python generate_vod_telegram.py
 
-      - name: Commit VOD playlist
+      - name: Commit VOD playlist and database
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add vod_playlist.m3u
+          git add vod_playlist.m3u vod_database.json
           if git diff --cached --quiet; then
             echo "No changes to commit."
           else
