@@ -27,6 +27,7 @@ jobs:
         env:
           GDRIVE_SERVICE_ACCOUNT: ${{ secrets.GDRIVE_SERVICE_ACCOUNT }}
           GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
           VOD_OUTPUT_FILE: vod_playlist.m3u
           VOD_GROUP: VOD
           VERCEL_URL: https://googledrive-omega.vercel.app
